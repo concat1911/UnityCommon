@@ -2,6 +2,7 @@ namespace VeryDisco
 {
     using UnityEngine;
 
+
     public class GenericSingleton<T> : MonoBehaviour where T : Component
     {
         public static T instance { get; private set; }
