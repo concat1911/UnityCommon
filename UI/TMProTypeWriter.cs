@@ -18,7 +18,6 @@ namespace VeryDisco.CommonUI
         private void Start()
         {
             IsPlayingEffect = false;
-            cancellationTokenSource = new CancellationTokenSource();
         }
 
         public void SetTypeSpeed(float speed)
@@ -36,6 +35,7 @@ namespace VeryDisco.CommonUI
         public async void PlayEffect()
         {
             if (IsPlayingEffect) return;
+            cancellationTokenSource = new CancellationTokenSource();
             CancellationToken cancellationToken = cancellationTokenSource.Token;
             await TypeWriterTextJob(cancellationToken);
         }
@@ -50,12 +50,40 @@ namespace VeryDisco.CommonUI
             {
                 // Player Sound Effect here
                 cancellationToken.ThrowIfCancellationRequested();
-                textMeshPro.text += originalText[i];
+
+                if (originalText[i] == '<')
+                {
+                    textMeshPro.text += RigTagCheck(ref i);
+                }
+                else
+                {
+                    textMeshPro.text += originalText[i];
+                }
+
                 await UniTask.WaitForSeconds(typingSpeed);
             }
             
             IsPlayingEffect = false;
             OnEffectFinish.Invoke();
+        }
+
+        string RigTagCheck(ref int index)
+        {
+            string completeTag = string.Empty;
+
+            while(index < originalText.Length)
+            {
+                completeTag += originalText[index];
+
+                if (originalText[index] == '>')
+                {
+                    return completeTag;
+                }
+
+                index++;
+            }
+
+            return string.Empty;
         }
     }
 }
